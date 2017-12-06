@@ -8,10 +8,10 @@ void sse_prefetch_transpose(int *src, int *dst, int w, int h)
     for (int x = 0; x < w; x += 4) {
         for (int y = 0; y < h; y += 4) {
 #define PFDIST  8
-            _mm_prefetch(src+(y + PFDIST + 0) *w + x, _MM_HINT_T1);
-            _mm_prefetch(src+(y + PFDIST + 1) *w + x, _MM_HINT_T1);
-            _mm_prefetch(src+(y + PFDIST + 2) *w + x, _MM_HINT_T1);
-            _mm_prefetch(src+(y + PFDIST + 3) *w + x, _MM_HINT_T1);
+            _mm_prefetch(src+(y + PFDIST + 0) *w + x, _MM_HINT_NTA);
+            _mm_prefetch(src+(y + PFDIST + 1) *w + x, _MM_HINT_NTA);
+            _mm_prefetch(src+(y + PFDIST + 2) *w + x, _MM_HINT_NTA);
+            _mm_prefetch(src+(y + PFDIST + 3) *w + x, _MM_HINT_NTA);
 
             __m128i I0 = _mm_loadu_si128 ((__m128i *)(src + (y + 0) * w + x));
             __m128i I1 = _mm_loadu_si128 ((__m128i *)(src + (y + 1) * w + x));
