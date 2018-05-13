@@ -16,7 +16,7 @@
 
 #include IMPL
 
-static long diff_in_us(struct timespec t1, struct timespec t2)
+static long int diff_in_us(struct timespec t1, struct timespec t2)
 {
     struct timespec diff;
     if (t2.tv_nsec-t1.tv_nsec < 0) {
@@ -26,7 +26,7 @@ static long diff_in_us(struct timespec t1, struct timespec t2)
         diff.tv_sec  = t2.tv_sec - t1.tv_sec;
         diff.tv_nsec = t2.tv_nsec - t1.tv_nsec;
     }
-    return (diff.tv_sec * 1000000.0 + diff.tv_nsec / 1000.0);
+    return (diff.tv_sec * 1000000000 + diff.tv_nsec  );
 }
 
 int main(int argc ,char *argv[])
@@ -101,7 +101,7 @@ int main(int argc ,char *argv[])
         assert(0 == memcmp(testout, expected, max*max * sizeof(int)) &&
                "Verification fails");
     }
-
+    //getchar();
     {
         struct timespec start, end;
         int *src  = (int *) malloc(sizeof(int) * TEST_W * TEST_H);
