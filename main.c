@@ -7,8 +7,7 @@
 
 #include <xmmintrin.h>
 
-#define TEST_W 4096
-#define TEST_H 4096
+
 #define block_size 4
 
 /* provide the implementations of naive_transpose,
@@ -30,8 +29,26 @@ static long diff_in_us(struct timespec t1, struct timespec t2)
     return (diff.tv_sec * 1000000.0 + diff.tv_nsec / 1000.0);
 }
 
-int main()
+int main(int argc ,char *argv[])
 {
+
+#if (OPT==1)
+        int TEST_W,TEST_H;
+        if(argc == 1){
+            FILE *fp = fopen("TEST_HW.txt","r");
+            fscanf(fp,"%d",&TEST_W);
+            TEST_H = TEST_W;
+            fclose(fp);
+        }
+        else{
+            TEST_H = 4096;
+            TEST_W = 4096;
+        }
+
+#else
+        #define TEST_W 4096
+        #define TEST_H 4096
+#endif
     /* verify the result of 4x4 matrix */
     {
         /*
@@ -43,8 +60,9 @@ int main()
                              2, 6, 10, 14, 3, 7, 11, 15
                            };
         */
-        int max = 16; //use to define max
         //scanf("%d",&max);
+        int max = 4; //use to define max
+
         assert( (max & (block_size-1)) == 0 &&
                "input is not a multiple of 4");
         int testin[max*max];
@@ -69,7 +87,11 @@ int main()
 #elif defined(SSE)
         sse_transpose(testin, testout, max, max);
 #elif defined(SSE_PREFETCH)
-        sse_prefetch_transpose(testin, testout, max, max);
+        #if(OPT == 1)
+        sse_prefetch_transpose(testin, testout, max, max,8);
+        #else
+            sse_prefetch_transpose(testin, testout, max, max);
+        #endif
 #endif
         /*for (int y = 0; y < max; y++) {
             for (int x = 0; x < max; x++)
@@ -92,10 +114,20 @@ int main()
             for (int x = 0; x < TEST_W; x++)
                 *(src + y * TEST_W + x) = rand();
 #if defined(SSE_PREFETCH)
-        clock_gettime(CLOCK_REALTIME, &start);
-        sse_prefetch_transpose(src, out0, TEST_W, TEST_H);
-        clock_gettime(CLOCK_REALTIME, &end);
-        printf("sse prefetch: \t %ld us\n", diff_in_us(start, end));
+        #if(OPT == 1)
+            int  PFDIST = (int)strtol(argv[1],NULL,10);
+            //printf("P = %d\n", PFDIST);
+            clock_gettime(CLOCK_REALTIME, &start);
+            sse_prefetch_transpose(src, out0, TEST_W, TEST_H,PFDIST);
+            clock_gettime(CLOCK_REALTIME, &end);
+            FILE *fp = fopen("Distance.txt", "a");
+            fprintf(fp,"%ld\n", diff_in_us(start, end));
+        #else
+            clock_gettime(CLOCK_REALTIME, &start);
+            sse_prefetch_transpose(src, out0, TEST_W, TEST_H);
+            clock_gettime(CLOCK_REALTIME, &end);
+            printf("sse prefetch: \t %ld us\n", diff_in_us(start, end));
+        #endif
 #elif defined(SSE)
         clock_gettime(CLOCK_REALTIME, &start);
         sse_transpose(src, out1, TEST_W, TEST_H);
