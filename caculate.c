@@ -5,7 +5,7 @@
 #include <ctype.h>
 #include <assert.h>
 #define D_Pmax 15
-#define D_TestTime 32
+#define D_TestTime 64
 
 #define min(a,b) \
    ({ __typeof__ (a) _a = (a); \
@@ -21,32 +21,35 @@ int main()
     char temp[] = "./sse_prefetch_transpose_opt ";
     strcat(orderA,temp);
     //printf("%s\n",orderA );
-    int avg[D_Pmax] , PFDIST;
-    for(int Pcounter = 0;Pcounter<D_Pmax;Pcounter++){
+    int avg[D_Pmax]={0} , PFDIST;
+    for(int counter = 0;counter<D_TestTime;counter++){
+        for(int Pcounter = 0;Pcounter<D_Pmax;Pcounter++){
         char time[5];
-        avg[Pcounter] = 0;
         sprintf(time,"%d",Pcounter);
         strcat(orderA,time);
-        for(int counter = 0;counter<D_TestTime;counter++){
-            //printf("%s\n",orderA );
-            system(orderA);
-        }
+        //printf("%s\n",orderA );
+        system(orderA);
         orderA[29] = '\0';
-        printf("%d end\n",Pcounter);
+        }
+
+        //printf("%d end\n",Pcounter);
     }
     //Get execution time end
     fp = fopen("Distance.txt","r");
     FILE *data = fopen("DistanceAVG.txt","w");
-    for(int Pcounter = 0;Pcounter<D_Pmax;Pcounter++){
-        for(int counter = 0;counter<D_TestTime;counter++){
+    for(int counter = 0;counter<D_TestTime;counter++){
+        for(int Pcounter = 0;Pcounter<D_Pmax;Pcounter++){
             int temp;
             fscanf(fp,"%d",&temp);
             avg[Pcounter] += temp;
         }
+    }
+    for(int Pcounter = 0;Pcounter<D_Pmax;Pcounter++){
         avg[Pcounter]/=D_TestTime;
         printf("PFDIST of %d is  %d\n", Pcounter,avg[Pcounter]);
         fprintf(data,"%d %d\n", Pcounter,avg[Pcounter]);
     }
+
     fclose(fp);
     fclose(data);
 
