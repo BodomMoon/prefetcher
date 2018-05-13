@@ -34,7 +34,7 @@ int main(int argc ,char *argv[])
 
 #if (OPT==1)
         int TEST_W,TEST_H;
-        if(argc == 1){
+        if(argc != 0){
             FILE *fp = fopen("TEST_HW.txt","r");
             fscanf(fp,"%d",&TEST_W);
             TEST_H = TEST_W;
