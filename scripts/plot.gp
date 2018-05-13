@@ -1,5 +1,5 @@
 set terminal 'png'
-set title 'PFDIST'
+set title 'PFDIST(4x)'
 set datafile separator " "
 set output 'time.png'
 set ylabel 'time(sec)'
