@@ -8,10 +8,15 @@ void sse_prefetch_transpose(int *src, int *dst, int w, int h,int PFDIST)
 {
     for (int y = 0; y < h; y += 4) {
         for (int x = 0; x < w; x += 4) {
-            _mm_prefetch(src+(y  + 0) *w + x+ PFDIST, _MM_HINT_NTA);
-            _mm_prefetch(src+(y  + 1) *w + x+ PFDIST, _MM_HINT_NTA);
-            _mm_prefetch(src+(y  + 2) *w + x+ PFDIST, _MM_HINT_NTA);
-            _mm_prefetch(src+(y  + 3) *w + x+ PFDIST, _MM_HINT_NTA);
+            _mm_prefetch(src+(y  + 0) *w + x+ PFDIST*4, _MM_HINT_T0);
+            _mm_prefetch(src+(y  + 1) *w + x+ PFDIST*4, _MM_HINT_T0);
+            _mm_prefetch(src+(y  + 2) *w + x+ PFDIST*4, _MM_HINT_T0);
+            _mm_prefetch(src+(y  + 3) *w + x+ PFDIST*4, _MM_HINT_T0);
+            /*printf("%d\n", *(src + (y + 0) * w + x));
+            printf("%d\n", *(src + (y + 1) * w + x));
+            printf("%d\n", *(src + (y + 2) * w + x));
+            printf("%d\n", *(src + (y + 3) * w + x));*/
+
 
             __m128i I0 = _mm_loadu_si128 ((__m128i *)(src + (y + 0) * w + x));
             __m128i I1 = _mm_loadu_si128 ((__m128i *)(src + (y + 1) * w + x));
