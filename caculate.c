@@ -4,8 +4,8 @@
 #include <time.h>
 #include <ctype.h>
 #include <assert.h>
-#define D_Pmax 15
-#define D_TestTime 64
+#define D_Pmax 16
+#define D_TestTime 128
 
 #define min(a,b) \
    ({ __typeof__ (a) _a = (a); \
@@ -21,7 +21,7 @@ int main()
     char temp[] = "./sse_prefetch_transpose_opt ";
     strcat(orderA,temp);
     //printf("%s\n",orderA );
-    int avg[D_Pmax]={0} , PFDIST;
+    long int avg[D_Pmax]={0} , PFDIST;
     for(int counter = 0;counter<D_TestTime;counter++){
         for(int Pcounter = 0;Pcounter<D_Pmax;Pcounter++){
         char time[5];
@@ -39,22 +39,23 @@ int main()
     FILE *data = fopen("DistanceAVG.txt","w");
     for(int counter = 0;counter<D_TestTime;counter++){
         for(int Pcounter = 0;Pcounter<D_Pmax;Pcounter++){
-            int temp;
-            fscanf(fp,"%d",&temp);
+            long int temp;
+            fscanf(fp,"%ld",&temp);
             avg[Pcounter] += temp;
         }
     }
     for(int Pcounter = 0;Pcounter<D_Pmax;Pcounter++){
         avg[Pcounter]/=D_TestTime;
-        printf("PFDIST of %d is  %d\n", Pcounter,avg[Pcounter]);
-        fprintf(data,"%d %d\n", Pcounter,avg[Pcounter]);
+        printf("PFDIST of %d is  %ld\n", Pcounter,avg[Pcounter]);
+        fprintf(data,"%d %ld\n", Pcounter,avg[Pcounter]);
     }
 
     fclose(fp);
     fclose(data);
 
-    int minNum = 0x7fffffff , tempNum;
-    for(int counter=0;counter<D_Pmax;counter++){
+    long int minNum = 0x7fffffffffffffff ;
+    int tempNum;
+    for(int counter=D_Pmax-1;counter>=0;counter--){
         if( min(minNum,avg[counter]) != minNum)
             tempNum = counter;
         printf("%d\n", tempNum);
